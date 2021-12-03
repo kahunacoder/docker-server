@@ -16,7 +16,6 @@
       - fonts-powerline
       - zsh-autosuggestions
       - zsh-syntax-highlighting
-      - hollywood
       - ansible
 
 - name: Copy truetype fonts for {{developer}} terminal

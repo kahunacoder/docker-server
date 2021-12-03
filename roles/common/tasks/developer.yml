@@ -87,6 +87,6 @@
     src: "settings/{{item}}"
     dest: "~/.{{item}}"
     force: yes
-  with_items: ["zshrc", "aliases", "gitconfig", "tmux.conf", "p10k.zsh"]
+  with_items: ["zshrc", "aliases", "tmux.conf", "p10k.zsh"]
   become: yes
   become_user: "{{developer}}"

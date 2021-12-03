@@ -1,0 +1,22 @@
+---
+- import_tasks: developer.yml
+- import_tasks: portmaster.yml
+
+- name: Allow specified groups to sudo
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/sudoers
+    validate: "visudo -cf %s"
+    mode: 0440
+
+- name: Add private docker network for proxied docker containers
+  docker_network:
+    name: proxy
+
+- name: Insert new docker daemons.json file
+  template:
+    src: daemon.j2
+    dest: /etc/docker/daemon.json
+    mode: 0644
+
+- import_tasks: portainer.yml

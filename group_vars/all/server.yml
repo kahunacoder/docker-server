@@ -1,0 +1,68 @@
+---
+hostname: "docker-vm" # your hostname
+tz: "America/New_York" # the timezone of your server
+
+# This is the name of the user that all of the containers will run as.
+# This user has no shell and cannot login to the server.
+portmaster: pm # I like short names for typing ;)
+
+# These are only needed if you plan on building containers from a private git repo
+
+# The path on the control node where the ssh keys are stored.
+# The default value is standard on mac and linux
+portmaster_key_path: "~/.ssh/"
+# The public ssh key associated with a github account
+# id_rsa.pub seems to be the most common name.
+portmaster_pub_key: "id_rsa.pub"
+
+# The developer user is a privileged user with shell and sudo access.
+developer: "dv" # I like short names for typing ;)
+# The path on the control node where the ssh keys are stored.
+# The default value is standard on mac and linux
+developer_key_path: "~/.ssh/"
+# The public ssh key associated with a github account
+# id_rsa.pub seems to be the most common name.
+developer_pub_key: "id_rsa.pub"
+
+tailscale_auth_key: "" # If left empty tailscale won't install.
+
+### Modify these defaults if you need to and are aware of the consequences ###
+
+# User and group ids generated when a user is added.
+# Since this is an ubuntu install the ubuntu user is set at
+# uid=1001 and guid=1001. Each user id is incremented by one
+# so this user will get uid=1002 and guid=1002.
+# Here we set it for consistency.
+PUID: "1002" # portmaster user id
+PGID: "1002" # portmaster group id
+
+# developer ids SEE ABOVE
+DUID: "1003"
+DGID: "1003"
+
+# DOCKER GROUP ID
+CGID: "998"
+
+container_name: portainer_agent
+container_image: portainer/agent
+container_ports: 9001:9001
+
+log_size: 10m
+log_files: 10
+
+# =====================  Auto generated do not modify. ===================== #
+
+git_pub_key: "/home/{{portmaster}}/.ssh/{{portmaster_pub_key}}"
+portmaster_path: "/home/{{portmaster}}"
+
+sss_pub_key: "/home/{{developer}}/.ssh/{{developer_pub_key}}"
+developer_group: "{{developer}}"
+developer_path: "/home/{{developer}}"
+
+sudo_group:
+  - name: "{{ developer }}"
+    sudo: true
+
+docker_users:
+  - "{{ portmaster }}"
+  - "{{ developer }}"

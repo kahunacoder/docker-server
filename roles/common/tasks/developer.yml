@@ -1,0 +1,92 @@
+---
+- name: Add ansible repository into sources list for {{developer}}
+  ansible.builtin.apt_repository:
+    repo: ppa:ansible/ansible
+
+- name: Install terminal enhancement packages and tools for {{developer}}
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  become: true
+  vars:
+    packages:
+      - zsh
+      - powerline
+      - fonts-powerline
+      - zsh-autosuggestions
+      - zsh-syntax-highlighting
+      - hollywood
+      - ansible
+
+- name: Copy truetype fonts for {{developer}} terminal
+  copy:
+    src: "{{item}}"
+    dest: "/usr/local/share/fonts"
+    force: no
+    mode: 644
+  with_fileglob:
+    - fonts/*.ttf
+
+- name: Update font cache for {{developer}}
+  command: fc-cache
+
+- name: Ensure group "{{developer}}" exists
+  group:
+    name: "{{developer}}"
+    state: present
+    gid: "{{DGID}}"
+
+- name: Create {{developer}} the 'developer' user
+  user:
+    name: "{{developer}}"
+    state: present
+    shell: "/usr/bin/zsh"
+    system: yes
+    createhome: yes
+    uid: "{{DUID}}"
+    groups:
+      - "{{developer}}"
+      - "{{portmaster}}"
+      - "docker"
+      - "sudo"
+      - "admin"
+
+- name: Set authorized key taken from file for {{developer}}
+  ansible.posix.authorized_key:
+    user: "{{developer}}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - "{{developer_key_path}}{{developer_pub_key}}"
+
+- name: Add github's key to known hosts for {{developer}}
+  known_hosts:
+    path: "{{developer_path}}/.ssh/known_hosts"
+    name: github.com
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+    state: present
+  become: yes
+  become_user: "{{developer}}"
+
+- name: Run oh-my-zsh installer for {{developer}}
+  shell: wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh  -O - | zsh || true
+  become: yes
+  become_user: "{{developer}}"
+
+- name: Clone powerlevel10k theme for {{developer}}
+  become: yes
+  become_user: "{{ developer }}"
+  git:
+    repo: "https://github.com/romkatv/powerlevel10k.git"
+    version: master
+    dest: "~/.oh-my-zsh/custom/themes/powerlevel10k"
+
+- name: Copying multiple dot files for {{developer}}
+  copy:
+    src: "settings/{{item}}"
+    dest: "~/.{{item}}"
+    force: yes
+  with_items: ["zshrc", "aliases", "gitconfig", "tmux.conf", "p10k.zsh"]
+  become: yes
+  become_user: "{{developer}}"

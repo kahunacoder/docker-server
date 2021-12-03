@@ -1,0 +1,15 @@
+
+alias gi='git init; printf ".DS_Store\nThumbs.db\n._*\n" >> .gitignore'
+
+alias dcup='docker-compose up -d'
+alias dnpm='docker-compose run --rm npm'
+alias dwsr='docker-compose exec workspace bash'
+alias dunpm='docker-compose up -d nginx mariadb node'
+alias dr='docker ps -a'
+alias ds='docker stats'
+
+alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+alias lsa='ls -la'
+alias cfl='lsa /home/pm/.appdata'
+alias cfd='cd /home/pm/.appdata'
+

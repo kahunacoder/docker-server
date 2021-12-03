@@ -1,0 +1,25 @@
+---
+- hosts: all
+  gather_facts: true
+  become: yes
+  vars:
+    ansible_python_interpreter:  /usr/bin/python3
+    pip_package: python3-pip
+    pip_install_packages:
+      - name: docker
+
+  environment:
+    DOCKER_CLIENT_TIMEOUT: 120
+    COMPOSE_HTTP_TIMEOUT: 120
+
+  roles:
+    - update
+    - geerlingguy.pip
+    - {
+        role: geerlingguy.docker_arm,
+        vars:docker_version_arm64: "5:20.10.11~3-0~ubuntu-focal",
+        when: ansible_architecture == 'arm64',
+      }
+    - { role: geerlingguy.docker, when: ansible_architecture == 'x86_64' }
+    - { role: artis3n.tailscale, when: tailscale_auth_key != '' }
+    - common

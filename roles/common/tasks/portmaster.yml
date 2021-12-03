@@ -1,0 +1,45 @@
+---
+- name: Ensure group "{{portmaster}}" exists
+  group:
+    name: "{{portmaster}}"
+    state: present
+    gid: "{{PGID}}"
+
+- name: Create {{portmaster}} the 'portmaster' user
+  user:
+    name: "{{portmaster}}"
+    state: present
+    shell: "/usr/sbin/nologin"
+    system: yes
+    createhome: yes
+    uid: "{{PUID}}"
+    groups:
+      - "{{portmaster}}"
+      - "docker"
+
+- name: Set authorized key taken from file for {{portmaster}}
+  ansible.posix.authorized_key:
+    user: "{{portmaster}}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - "{{portmaster_key_path}}{{portmaster_pub_key}}"
+
+- name: Add github's key to known hosts for {{portmaster}}
+  known_hosts:
+    path: "{{portmaster_path}}/.ssh/known_hosts"
+    name: github.com
+    key: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+    state: present
+  become: yes
+  # become_method: su
+  become_user: "{{portmaster}}"
+
+- name: Copying gitconfig file for {{portmaster}}
+  copy:
+    src: "settings/{{item}}"
+    dest: "~/.{{item}}"
+    force: yes
+  with_items: ["gitconfig"]
+  become: yes
+  become_user: "{{portmaster}}"

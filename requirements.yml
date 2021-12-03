@@ -1,0 +1,4 @@
+- name: geerlingguy.docker
+- name: geerlingguy.pip
+- name: artis3n.tailscale
+- name: geerlingguy.docker_arm

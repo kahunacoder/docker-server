@@ -1,0 +1,41 @@
+version: "2.1"
+services:
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    container_name: proxy-manager
+    ports:
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      DB_MYSQL_HOST: "proxydb"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: ${DB_MYSQL_USER}
+      DB_MYSQL_PASSWORD: ${DB_MYSQL_PASSWORD}
+      DB_MYSQL_NAME: ${DB_MYSQL_NAME}
+      DISABLE_IPV6: ${DISABLE_IPV6}
+    volumes:
+      - ${data}:/data
+      - ${letsencrypt}:/etc/letsencrypt
+    depends_on:
+      - proxydb
+
+  proxydb:
+    image: 'yobasystems/alpine-mariadb:latest'
+    restart: unless-stopped
+    container_name: proxy-manager-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ${mysql}:/var/lib/mysql
+
+networks:
+  default:
+    external:
+      name: proxy

@@ -1,0 +1,11 @@
+.vagrant
+*~
+*#
+.#*
+\#*#
+.*.sw[a-z]
+*.un~
+
+/playbook.retry
+__notes.sh
+*.code-workspace

@@ -1,0 +1,50 @@
+version: "2.1"
+services:
+
+  wordpress:
+    depends_on:
+      - wordpressdb
+      - adminer
+    image: wordpress
+    container_name: ${wordpress_container_name}
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: wordpressdb:3306
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    volumes:
+      - ${wordpress_data}:/var/www/html
+
+  wordpressdb:
+    image: lscr.io/linuxserver/mariadb
+    container_name: ${wordpressDB_container_name}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    volumes:
+      - ${db_data}:/config
+
+  adminer:
+    image: adminer
+    container_name: ${adminer_container_name}
+    restart: unless-stopped
+    links:
+      - wordpressdb
+    ports:
+      - 8080:8080
+    environment:
+      ADMINER_PLUGINS: ${ADMINER_PLUGINS}
+      ADMINER_DESIGN: ${ADMINER_DESIGN}
+      ADMINER_DEFAULT_SERVER: ${ADMINER_DEFAULT_SERVER}
+
+networks:
+  default:
+    external:
+      name: proxy

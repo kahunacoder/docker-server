@@ -1,0 +1,35 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Upgrade full
+  apt:
+    upgrade: full
+
+- name: Make a general dist-upgrade
+  apt:
+    upgrade: dist
+
+- name: Install common server packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  become: true
+  vars:
+    packages:
+      - unzip
+      - curl
+      - tree
+      - htop
+      - tmux
+      - apache2-utils
+      - mosh
+      - git
+      - ranger
+      - ncdu
+      - iperf3
+      - libiperf0
+      - libsctp1
+      - csvkit

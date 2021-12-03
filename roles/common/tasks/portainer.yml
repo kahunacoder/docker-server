@@ -1,0 +1,19 @@
+---
+- name: Pulling portainer agent docker image
+  docker_image:
+    name: "{{ container_image }}"
+    source: pull
+
+- name: Creating Portainer Agent Container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ container_image }}"
+    ports:
+      - "{{ container_ports }}"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/lib/docker/volumes:/var/lib/docker/volume"
+      - "/:/host"
+    state: started
+    restart: yes
+    recreate: yes

@@ -212,7 +212,6 @@ The `/hosts` and `/host_vars` files aren't used by Vagrant.
   * `ds` docker stats
   * `dr` docker ps -a
 
-
 ## OK Lets Do It ##
 
 * Run the provision command by pasting this in your terminal
